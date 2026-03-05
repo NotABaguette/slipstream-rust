@@ -1,6 +1,7 @@
 use std::fmt;
 
 pub const RR_A: u16 = 1;
+pub const RR_AAAA: u16 = 28;
 pub const RR_TXT: u16 = 16;
 pub const RR_OPT: u16 = 41;
 pub const CLASS_IN: u16 = 1;

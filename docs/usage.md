@@ -20,6 +20,7 @@ Common flags:
 - --authoritative <IP:PORT> (repeatable; mark a resolver path as authoritative and use pacing-based polling)
 - --gso (currently not implemented in the Rust loop; prints a warning)
 - --keep-alive-interval <MILLISECONDS> (default: 400)
+- --dns-record-type <txt|a|aaaa> (default: txt; A/AAAA modes camouflage responses as address records)
 
 Example:
 
