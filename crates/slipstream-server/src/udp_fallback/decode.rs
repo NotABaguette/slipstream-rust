@@ -1,6 +1,8 @@
 use super::{dummy_sockaddr_storage, FallbackManager, PacketContext};
 use crate::server::{ServerError, Slot};
-use slipstream_dns::{decode_query_with_domains, DecodeQueryError};
+use slipstream_dns::{
+    decode_query_with_domains_and_types, DecodeQueryError, RR_A, RR_AAAA, RR_TXT,
+};
 use slipstream_ffi::picoquic::{
     picoquic_cnx_t, picoquic_incoming_packet_ex, picoquic_quic_t, slipstream_disable_ack_delay,
 };
@@ -64,7 +66,7 @@ fn decode_slot(
     current_time: u64,
     local_addr_storage: &libc::sockaddr_storage,
 ) -> Result<DecodeSlotOutcome, ServerError> {
-    match decode_query_with_domains(packet, domains) {
+    match decode_query_with_domains_and_types(packet, domains, &[RR_TXT, RR_A, RR_AAAA]) {
         Ok(query) => {
             let mut peer_storage = dummy_sockaddr_storage();
             let mut local_storage = unsafe { std::ptr::read(local_addr_storage) };

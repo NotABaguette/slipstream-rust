@@ -20,7 +20,7 @@ codec is intentionally minimal and focused on speed and compatibility.
 ## DNS query format (client -> server)
 
 - QNAME: <base32(payload) with inline dots>.<domain>.
-- QTYPE: TXT (RR_TXT)
+- QTYPE: TXT (RR_TXT) by default; optional camouflage modes use A (RR_A) or AAAA (RR_AAAA).
 - QCLASS: IN (CLASS_IN)
 - QDCOUNT: 1
 - ARCOUNT: 1 with EDNS0 OPT record:
@@ -60,7 +60,7 @@ codec is intentionally minimal and focused on speed and compatibility.
 
 - If the DNS message is not a query (QR=1): respond with FORMAT_ERROR.
 - If QDCOUNT != 1: respond with FORMAT_ERROR.
-- If QTYPE != TXT: respond with NAME_ERROR (ignore query).
+- If QTYPE is not one of TXT/A/AAAA: respond with NAME_ERROR (ignore query).
 - If the QNAME subdomain is empty: respond with NAME_ERROR.
 - If base32 decode fails: respond with SERVER_FAILURE.
 - If the DNS parser fails (decode error): drop the message (no response).
@@ -71,7 +71,10 @@ codec is intentionally minimal and focused on speed and compatibility.
 
 The client treats the response as data only when:
 
-- QR = 1, RCODE = OK, ANCOUNT = 1, and the answer type is TXT.
+- QR = 1 and RCODE = OK with at least one answer.
+- TXT mode decodes TXT answer chunks directly.
+- A/AAAA camouflage mode decodes all A/AAAA RDATA bytes, then removes a
+  2-byte payload-length prefix used to trim final-record padding.
 
 Otherwise, the response is ignored (including NAME_ERROR, which signals no data).
 

@@ -16,6 +16,23 @@ pub enum ResolverMode {
     Authoritative = 2,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DnsRecordType {
+    Txt,
+    A,
+    Aaaa,
+}
+
+impl DnsRecordType {
+    pub fn to_rr_type(self) -> u16 {
+        match self {
+            DnsRecordType::Txt => 16,
+            DnsRecordType::A => 1,
+            DnsRecordType::Aaaa => 28,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ResolverSpec {
     pub resolver: HostPort,
@@ -28,6 +45,7 @@ pub struct ClientConfig<'a> {
     pub tcp_listen_port: u16,
     pub resolvers: &'a [ResolverSpec],
     pub domain: &'a str,
+    pub dns_record_type: DnsRecordType,
     pub cert: Option<&'a str>,
     pub congestion_control: Option<&'a str>,
     pub gso: bool,
