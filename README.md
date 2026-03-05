@@ -72,6 +72,17 @@ cargo run -p slipstream-client -- \
 
 Note: You can also run the client against a resolver that forwards to the server. For local testing, see the interop docs.
 
+## CI build matrix
+
+GitHub Actions now builds release binaries for all major desktop/server targets:
+
+- Ubuntu (`ubuntu-latest`): `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`
+- macOS ARM (`macos-latest`): `aarch64-apple-darwin`
+- macOS Intel (`macos-15-intel`): `x86_64-apple-darwin`
+- Windows (`windows-latest`): `x86_64-pc-windows-msvc`, `i686-pc-windows-msvc`
+
+See `.github/workflows/build-matrix.yml` for details.
+
 ## Production note: conntrack for UDP/53
 
 For a public `slipstream-server` on port 53, tune conntrack above many distro defaults.

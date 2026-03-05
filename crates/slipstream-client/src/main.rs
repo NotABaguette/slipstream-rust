@@ -10,7 +10,7 @@ use slipstream_core::{
     cli::{exit_with_error, exit_with_message, init_logging, unwrap_or_exit},
     normalize_domain, parse_host_port, parse_host_port_parts, sip003, AddressKind, HostPort,
 };
-use slipstream_ffi::{ClientConfig, ResolverMode, ResolverSpec};
+use slipstream_ffi::{ClientConfig, DnsRecordType, ResolverMode, ResolverSpec};
 use tokio::runtime::Builder;
 
 use runtime::run_client;
@@ -58,6 +58,8 @@ struct Args {
     debug_poll: bool,
     #[arg(long = "debug-streams")]
     debug_streams: bool,
+    #[arg(long = "dns-record-type", default_value = "txt", value_parser = parse_dns_record_type)]
+    dns_record_type: DnsRecordType,
 }
 
 fn main() {
@@ -182,6 +184,7 @@ fn main() {
         keep_alive_interval: keep_alive_interval as usize,
         debug_poll: args.debug_poll,
         debug_streams: args.debug_streams,
+        dns_record_type: args.dns_record_type,
     };
 
     let runtime = Builder::new_current_thread()
@@ -197,6 +200,15 @@ fn main() {
 
 fn parse_domain(input: &str) -> Result<String, String> {
     normalize_domain(input).map_err(|err| err.to_string())
+}
+
+fn parse_dns_record_type(input: &str) -> Result<DnsRecordType, String> {
+    match input.to_ascii_lowercase().as_str() {
+        "txt" => Ok(DnsRecordType::Txt),
+        "a" => Ok(DnsRecordType::A),
+        "aaaa" => Ok(DnsRecordType::Aaaa),
+        _ => Err("dns-record-type must be one of: txt, a, aaaa".to_string()),
+    }
 }
 
 fn parse_resolver(input: &str) -> Result<HostPort, String> {

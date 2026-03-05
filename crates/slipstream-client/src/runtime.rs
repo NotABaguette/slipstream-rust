@@ -19,7 +19,7 @@ use crate::streams::{
     ClientState, Command,
 };
 use slipstream_core::{net::is_transient_udp_error, normalize_dual_stack_addr};
-use slipstream_dns::{build_qname, encode_query, QueryParams, CLASS_IN, RR_TXT};
+use slipstream_dns::{build_qname, encode_query, QueryParams, CLASS_IN};
 use slipstream_ffi::{
     configure_quic_with_custom,
     picoquic::{
@@ -417,7 +417,7 @@ pub async fn run_client(config: &ClientConfig<'_>) -> Result<i32, ClientError> {
                 let params = QueryParams {
                     id: dns_id,
                     qname: &qname,
-                    qtype: RR_TXT,
+                    qtype: config.dns_record_type.to_rr_type(),
                     qclass: CLASS_IN,
                     rd: true,
                     cd: false,
